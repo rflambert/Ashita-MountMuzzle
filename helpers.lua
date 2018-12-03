@@ -29,26 +29,26 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 local colors = require("constants").colors
 
 function buildHelpCommandEntry(command, description)
-    local short_name = "mm":color(colors.primary)
-    local command = command:color(colors.secondary)
-    local sep = "=>":color(colors.primary)
-    local description = description:color(colors.info)
+    local short_name = strColor("mm", colors.primary)
+    local command = strColor(command, colors.secondary)
+    local sep = strColor("=>", colors.primary)
+    local description = strColor(description, colors.info)
     
-    return "%s %s %s %s":format(short_name, command, sep, description)
+    return string.format("%s %s %s %s", short_name, command, sep, description)
 end
 
 function buildHelpTypeEntry(name, description)
-    local name = name:color(colors.secondary)
-    local sep = "=>":color(colors.primary)
-    local description = description:color(colors.info)
+    local name = strColor(name, colors.secondary)
+    local sep = strColor("=>", colors.primary)
+    local description = strColor(description, colors.info)
     
-    return "%s %s %s":format(name, sep, description)
+    return string.format("%s %s %s", name, sep, description)
 end
 
 function buildHelpTitle(context)
-    local context = context:color(colors.danger)
+    local context = strColor(context, colors.danger)
     
-    return "%s Help: %s":color(colors.primary):format(_addon.name, context)
+    return string.format("%s Help: %s", _addon.name, context)
 end
 
 function buildHelpSeperator(character, count)
@@ -58,7 +58,7 @@ function buildHelpSeperator(character, count)
         sep = sep .. character
     end
     
-    return sep:color(colors.warn)
+    return strColor(sep, colors.warn)
 end
 
 function buildCommandResponse(message, success)
@@ -70,11 +70,34 @@ function buildCommandResponse(message, success)
         response_color = colors.danger
     end
     
-    return "%s: %s":format(response_type:color(response_color), message)
+    return string.format("%s: %s", 
+        strColor(response_type, response_color), strColor(message, colors.info)
+    )
 end
 
 function displayResponse(response, color)
     color = color or colors.info
-    windower.add_to_chat(color, response)
-    windower.console.write(response:strip_colors())
+    print(strColor(response, color))
+end
+
+function strColor(str, color) 
+    return string.format(color, str)
+end
+
+function ucFirst(str)
+    return str:gsub("^%l", string.upper)
+end
+
+function removeSlashes(str) 
+    return str:gsub("/", "")
+end
+
+function tableContains(tab, val)
+    for index, value in pairs(tab) do
+        if value == val then
+            return true
+        end
+    end
+
+    return false
 end

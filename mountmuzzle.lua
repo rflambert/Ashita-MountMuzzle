@@ -29,18 +29,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 _addon.name = 'Mount Muzzle'
 _addon.description = 'Change or remove the default mount music.'
 _addon.author = 'Sjshovan (Apogee) sjshovan@gmail.com'
-_addon.version = '0.9.4'
+_addon.version = '0.9.0'
 _addon.commands = {'mountmuzzle', 'muzzle', 'mm'}
-
-local _logger = require('logger')
-local _config = require('config')
-local _packets = require('packets')
 
 require('constants')
 require('helpers')
 
 require 'common'
-require 'ffxi.targets'
 
 local default_settings = {    
 	muzzle = "silent"
@@ -73,10 +68,10 @@ local help = {
         buildHelpSeperator('=', 23),
         buildHelpTitle('Types'),
         buildHelpSeperator('=', 23),
-        buildHelpTypeEntry(muzzles.silent.name:ucfirst(), muzzles.silent.description),
-        buildHelpTypeEntry(muzzles.mount.name:ucfirst(), muzzles.mount.description),
-        buildHelpTypeEntry(muzzles.chocobo.name:ucfirst(), muzzles.chocobo.description),
-        buildHelpTypeEntry(muzzles.zone.name:ucfirst(), muzzles.zone.description),
+        buildHelpTypeEntry(muzzles.silent.name, muzzles.silent.description),
+        buildHelpTypeEntry(muzzles.mount.name, muzzles.mount.description),
+        buildHelpTypeEntry(muzzles.chocobo.name, muzzles.chocobo.description),
+        buildHelpTypeEntry(muzzles.zone.name, muzzles.zone.description),
         buildHelpSeperator('=', 23),
     },
     about = {
@@ -97,7 +92,6 @@ local help = {
             z = muzzles.zone.name
         }
     }
-
 }
 
 function display_help(table_help)
@@ -111,7 +105,7 @@ function getMuzzle()
 end
 
 function getPlayerBuffs() 
-    return T(windower.ffxi.get_player().buffs)
+    return AshitaCore:GetDataManager():GetPlayer():GetBuffs()
 end
 
 function resolveCurrentMuzzle()
@@ -121,7 +115,7 @@ function resolveCurrentMuzzle()
         current_muzzle = muzzles.silent.name
         setMuzzle(current_muzzle)
         displayResponse(
-            'Note: Muzzle found in settings was not valid and is now set to the default (%s).':format('Silent':color(colors.secondary)),
+            'Note: Muzzle found in settings was not valid and is now set to the default (%s).',
             colors.warn
         )
     end
@@ -135,14 +129,18 @@ function setMuzzle(muzzle)
 end
 
 function playerInReive()
-    return getPlayerBuffs():contains(player.buffs.reiveMark)
+    return tableContains(getPlayerBuffs(), player.buffs.reiveMark)
 end
 
 function playerIsMounted()
-    local _player = windower.ffxi.get_player()
-    
-    if _player then
-        return _player.status == player.statuses.mounted or getPlayerBuffs():contains(player.buffs.mounted)
+    local entity = AshitaCore:GetDataManager():GetEntity()
+
+    if entity then
+        return tableContains(
+            player.statuses.mounted, entity:GetStatus(player.statuses.types.mount)
+        ) or tableContains(
+            getPlayerBuffs(), player.buffs.mounted
+        )
     end
     
     return false 
@@ -156,11 +154,11 @@ function injectMuzzleMusic()
     injectMusic(music.types.mount, resolveCurrentMuzzle().song)
 end
 
-function injectMusic(bgmType, songID) 
-    _packets.inject(_packets.new('incoming', packets.inbound.music_change.id, {
-        ['BGM Type'] = bgmType,
-        ['Song ID'] = songID,
-    }))
+function injectMusic(bgmType, songID)
+    local bgm_packet = struct.pack("bbbbbbb", 
+        0x5F, 0x04, 0x00, 0x00, 0x04, 0x00, songID, 0x00
+    ):totable();
+    AddIncomingPacket(packets.inbound.music_change.id, bgm_packet)
 end
 
 function requestInject()
@@ -180,37 +178,33 @@ function tryInject()
 end
 
 ashita.register_event('load', function()
-    settings = ashita.settings.load_merged(_addon.path .. '/settings/settings.json', settings);   
-end);
-
-#TODO: find equivalent
-#windower.register_event('login', 'load', 'zone change', function() 
-#    tryInject()
-#end)
+    settings = ashita.settings.load_merged(_addon.path .. '/settings/settings.json', settings)   
+    tryInject();
+end)
 
 ashita.register_event('unload', function() 
     injectMusic(music.types.mount, muzzles.zone.song)
 end)
 
 ashita.register_event('command', function(command, ntype)
-    if command then
-        command = command:lower()
-    else 
-        return display_help(help.commands)
-    end
-    
-    local command_args = {...}
+
+    local command_args = command:lower():args()
+
+    if not tableContains(_addon.commands, removeSlashes(command_args[1])) then
+        return false
+    end 
+
     local respond = false
     local response_message = ''
     local success = true
-    
-    if command == 'list' or command == 'l' then
+ 
+    if command_args[2] == 'list' or command_args[2] == 'l' then
         display_help(help.types)
 
-    elseif command == 'set' or command == 's' then
+    elseif command_args[2] == 'set' or command_args[2] == 's' then
         respond = true
         
-        local muzzle = tostring(command_args[1]):lower()
+        local muzzle = tostring(command_args[3]):lower()
         local from_alias = help.aliases.muzzles[muzzle]
         
         if (from_alias ~= nil) then
@@ -223,33 +217,34 @@ ashita.register_event('command', function(command, ntype)
         else
             requestInject()
             setMuzzle(muzzle)
-            response_message = 'Updated current muzzle to %s.':format(muzzle:ucfirst():color(colors.secondary))
+            response_message = string.format('Updated current muzzle to %s.', strColor(ucFirst(muzzle), colors.secondary))
         end
 
-    elseif command == 'get' or command == 'g' then
+    elseif command_args[2] == 'get' or command_args[2] == 'g' then
         respond = true
-        response_message = 'Current muzzle is %s.':format(getMuzzle():ucfirst():color(colors.secondary))
+        response_message = 'Current muzzle is %s.'
 
-    elseif command == 'default' or command == 'd' then
+    elseif command_args[2] == 'default' or command_args[2] == 'd' then
         respond = true
         requestInject()
 
         setMuzzle(muzzles.silent.name)
-        response_message = 'Updated current muzzle to the default (%s).':format('Silent':color(colors.secondary))
+        response_message = 'Updated current muzzle to the default (%s).'
 
-    elseif command == 'reload' or command == 'r' then
+    elseif command_args[2] == 'reload' or command_args[2] == 'r' then
         windower.send_command('lua r mountmuzzle')
     
-    elseif command == 'unload' or command == 'u' then
+    elseif command_args[2] == 'unload' or command_args[2] == 'u' then
         respond = true
         response_message = 'Thank you for using Mount Muzzle. Goodbye.'
         windower.send_command('lua unload mountmuzzle')
 
-    elseif command == 'about' or command == 'a' then
+    elseif command_args[2] == 'about' or command_args[2] == 'a' then
         display_help(help.about)
         
-    elseif command == 'help' or command == 'h' then
+    elseif command_args[2] == 'help' or command_args[2] == 'h' then
         display_help(help.commands)
+
     else
         display_help(help.commands)
     end
@@ -261,15 +256,21 @@ ashita.register_event('command', function(command, ntype)
     end
     
     handleInjectionNeeds()
+
+    return false
 end)
 
-ashita.register_event('incoming_packet', function(id, size, packet, packet_modified, blocked)
-     if id == packets.inbound.music_change.id then
-        if packet['BGM Type'] == music.types.mount then
-            packet['Song ID'] = resolveCurrentMuzzle().song
-            return _packets.build(packet)
+ashita.register_event('incoming_packet', function(id, size, packet, modified_packet, blocked_packet)
+    if id == packets.inbound.music_change.id then
+        local music_type = struct.unpack('H', packet, packets.inbound.music_change.offsets.type + 1)
+   
+        if music_type == music.types.mount then
+            injectMusic(music.types.mount, resolveCurrentMuzzle().song)
+            return true               
         end
+
         tryInject()
     end
-	return false;
+	
+    return false
 end)

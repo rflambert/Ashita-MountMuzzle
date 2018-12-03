@@ -29,7 +29,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 packets = {
     inbound = {
         music_change = {
-            id = 0x05F
+            id = 0x05F,
+            offsets = {
+                type = 0x06
+            }
         },
         zone_update = {
             id = 0x00A
@@ -48,7 +51,13 @@ packets = {
 
 player = {
     statuses = {
-        mounted = 85
+        types = {
+            mount = 1072
+        },
+        mounted = {
+            chocobo = 5,
+            mount = 85
+        }
     },
     buffs = {
         reiveMark = 511,
@@ -58,25 +67,25 @@ player = {
 
 music = {
     songs = {
-        silent = 91,
-        mount = 84,
-        chocobo = 212,
-        zone = 0,
+        silent = 0x5B,
+        mount = 0x54,
+        chocobo = 0xD4,
+        zone = 0x00,
     },
     types = {
-        mount = 4,
+        mount = 84,
         idle_day = 0,
         idle_night = 1
     }
 }
 
 colors = {
-    primary = 200,
-    secondary = 207,
-    info = 0,
-    warn = 140,
-    danger = 167,
-    success = 158
+    primary = "\31\200%s",
+    secondary = "\31\207%s",
+    info = "\31\1%s",
+    warn = "\31\140%s",
+    danger = "\31\167%s",
+    success = "\31\158%s"
 }
 
 muzzles = {

@@ -1,10 +1,10 @@
 **Author:** [Sjshovan (Apogee)](https://github.com/Ap0gee)  
-**Version:** v0.9.4  
+**Version:** v0.9.0  
 
 
 # Mount Muzzle
 
-> A Windower 4 addon that allows the user to change or remove the default mount music in Final Fantasy 11 Online.
+> An Ashita v3 addon that allows the user to change or remove the default mount music in Final Fantasy 11 Online.
 
 
 ### Table of Contents
@@ -23,23 +23,31 @@
 ___
 ### Prerequisites
 1. [Final Fantasy 11 Online](http://www.playonline.com/ff11us/index.shtml)
-2. [Windower 4](http://windower.net/)
+2. [Ashita v3](https://www.ashitaxi.com/)
 
 ___
 ### Installation
 
-**Windower:**   
-1. Navigate to the `Addons` section at the top of Windower.
+**Ashita:**   
+1. Navigate to the `Addons` section on the left.
 2. Locate the `MountMuzzle` addon.
-3. Click the download button.
-4. Ensure the addon is switched on.
+3. Click the flashing download button near the upper-right corner.
 
 **Manual:**
-1. Navigate to <https://github.com/Ap0gee/MountMuzzle>.
+1. Navigate to <https://github.com/Ap0gee/Ashita-MountMuzzle>.
 2. Click on `Releases`. 
 3. Click on the `Source code (zip)` link within the latest release to download.
-4. Extract the zipped folder to `Windower4/addons/`.
-5. Rename the folder to remove the version tag (`-v0.9.4`). The folder should be named `MountMuzzle`.
+4. Extract the zipped folder to `Ashita_v3/addons/`.
+5. Rename the folder to remove the version tag (`-v0.9.0`). The folder should be named `MountMuzzle`.
+
+**Autoloading:**
+By default you will need to manually load this addon each time you restart the game.
+To autoload MountMuzzle so that it is always ready for use upon entering the game, follow these steps:
+
+1. Navigate to the `Ashita_v3/scripts/` directory.
+2. Open the `Default.txt` file.
+3. Locate the `Load Common Addons` section.
+4. add the following line: `/addon load mountmuzzle`.
 
 ___
 ### Aliases
@@ -163,50 +171,7 @@ ___
 ___
 ### Change Log
 
-**v0.9.4** - 9/06/2018
-- **Fix:** Music wouldn't change if addon loaded while on mount.
-- **Fix:** Music wouldn't change if addon unloaded while on mount.
-- **Fix:** Muzzle type 'Silent' was playing incorrect track.
-- **Update:** Licences now display correct addon name.
-- **Update:** Muzzle type 'Normal' changed to 'Mount'.
-- **Update:** Muzzle type 'Choco' changed to 'Chocobo'.
-- **Update:** mountmuzzle.lua refactored and condensed.
-- **Update:** README Commands updated.
-- **Update:** README Installation updated.
-- **Update:** README Table of Contents updated.
-- **Update:** README Known Issues updated.
-- **Update:** README TODOS updated.
-- **Add:** New commands added (about, unload).
-- **Add:** Shorthand aliases added to all commands.
-- **Add:** Aliases added to README.
-
-**v0.9.3** - 5/31/2018
-- **Remove:** Removed /data/settings.xml file.
-- **Update:** licences now display correct author name.
-- **Update:** helpers.lua now requires only colors from constants.lua.
-- **Update:** constants.lua now returns table of globals for modular support.
-- **Update:** mountmuzzle.lua refactored in attempt to meet merge criteria.
-- **Update:** README refactored in attempt to meet merge criteria.
-
-**v0.9.2** - 5/24/2018
-- **Fix:** Zone music gets silenced if player enters reive on mount with zone muzzle selected.
-- **Fix:** Player reaches error if no arguments are given upon invoking the addon.  
-- **Update:** Convert tab characters to spaces, simplify code.  
-- **Update:** README Usage Instructions updated.
-- **Update:** README Known Issues updated.
-- **Add:** Table of Contents added to README.
-- **Add:** Prerequisites added to README.
-- **Add:** Installation added to README. 
-- **Add:** Support added to README.
-- **Add:** License added to README.
-
-**v0.9.1** - 5/22/2018
-- **Fix:** Chosen music does not start upon login if mounted. 
-- **Fix:** Chosen music does not persist upon changing zones.
-- **Add:** Known Issues added to README.
-- **Add:** TODOS added to README.
-
-**v0.9.0** - 5/21/2018
+**v0.9.0** - 12/4/2018
 - Initial release
 
 ___
