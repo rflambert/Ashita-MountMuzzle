@@ -88,10 +88,6 @@ function ucFirst(str)
     return str:gsub("^%l", string.upper)
 end
 
-function removeSlashes(str) 
-    return str:gsub("/", "")
-end
-
 function tableContains(tab, val)
     for index, value in pairs(tab) do
         if value == val then

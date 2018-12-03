@@ -40,7 +40,8 @@ ___
 4. Extract the zipped folder to `Ashita_v3/addons/`.
 5. Rename the folder to remove the version tag (`-v0.9.0`). The folder should be named `MountMuzzle`.
 
-**Autoloading:**
+**Autoloading:**   
+
 By default you will need to manually load this addon each time you restart the game.
 To autoload MountMuzzle so that it is always ready for use upon entering the game, follow these steps:
 
@@ -112,7 +113,7 @@ Here are some usage examples for the **set _\<muzzle>_** command: `mm set silent
 **get**
 
 Displays the current muzzle that is set. Below are the equivalent ways of calling the command:
-	
+    
     //mountmuzzle get
     //muzzle get
     //mm get
@@ -122,7 +123,7 @@ Displays the current muzzle that is set. Below are the equivalent ways of callin
 
 Sets the current muzzle to the default muzzle type: `Silent`. Below are the equivalent ways of calling the command:
 
-	//mountmuzzle default
+    //mountmuzzle default
     //muzzle default
     //mm default
     //mm d
@@ -130,7 +131,7 @@ Sets the current muzzle to the default muzzle type: `Silent`. Below are the equi
 **unload**
 
 Unloads the Mount Muzzle addon. Below are the equivalent ways of calling the command:
-	
+    
     //mountmuzzle unload
     //muzzle unload
     //mm unload
@@ -139,7 +140,7 @@ Unloads the Mount Muzzle addon. Below are the equivalent ways of calling the com
 **reload**
 
 Reloads the Mount Muzzle addon. Below are the equivalent ways of calling the command:
-	
+    
     //mountmuzzle reload
     //muzzle reload
     //mm reload
@@ -148,7 +149,7 @@ Reloads the Mount Muzzle addon. Below are the equivalent ways of calling the com
 **about**
 
 Displays information about the Mount Muzzle addon. Below are the equivalent ways of calling the command:
-	
+    
     //mountmuzzle about
     //muzzle about
     //mm about
@@ -157,7 +158,7 @@ Displays information about the Mount Muzzle addon. Below are the equivalent ways
 ___
 ### Support
 **Having Issues with this addon?**
-* Please let me know [here](https://github.com/Ap0gee/MountMuzzle/issues/new).
+* Please let me know [here](https://github.com/Ap0gee/Ashita-MountMuzzle/issues/new).
   
 **Have something to say?**
 * Send me some feedback here: <sjshovan@gmail.com>

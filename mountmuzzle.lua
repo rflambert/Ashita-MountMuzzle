@@ -30,7 +30,7 @@ _addon.name = 'Mount Muzzle'
 _addon.description = 'Change or remove the default mount music.'
 _addon.author = 'Sjshovan (Apogee) sjshovan@gmail.com'
 _addon.version = '0.9.0'
-_addon.commands = {'mountmuzzle', 'muzzle', 'mm'}
+_addon.commands = {'/mountmuzzle', '/muzzle', '/mm'}
 
 require('constants')
 require('helpers')
@@ -39,15 +39,15 @@ require 'common'
 
 local default_settings = {    
 	muzzle = "silent"
-};
+}
 
 local settings = default_settings;
-
-local needs_inject = false
 
 local defaults = {
     muzzle = muzzles.silent.name
 }
+
+local needs_inject = false
 
 local help = {
     commands = {
@@ -115,7 +115,10 @@ function resolveCurrentMuzzle()
         current_muzzle = muzzles.silent.name
         setMuzzle(current_muzzle)
         displayResponse(
-            'Note: Muzzle found in settings was not valid and is now set to the default (%s).',
+            string.format(
+                'Note: Muzzle found in settings was not valid and is now set to the default (%s\30\1).', 
+                strColor('Silent', colors.secondary)
+            ),
             colors.warn
         )
     end
@@ -178,7 +181,9 @@ function tryInject()
 end
 
 ashita.register_event('load', function()
-    settings = ashita.settings.load_merged(_addon.path .. '/settings/settings.json', settings)   
+    settings = ashita.settings.load_merged(
+        _addon.path .. '/settings/settings.json', settings
+    )   
     tryInject();
 end)
 
@@ -190,7 +195,7 @@ ashita.register_event('command', function(command, ntype)
 
     local command_args = command:lower():args()
 
-    if not tableContains(_addon.commands, removeSlashes(command_args[1])) then
+    if not tableContains(_addon.commands, command_args[1]) then
         return false
     end 
 
@@ -217,27 +222,36 @@ ashita.register_event('command', function(command, ntype)
         else
             requestInject()
             setMuzzle(muzzle)
-            response_message = string.format('Updated current muzzle to %s.', strColor(ucFirst(muzzle), colors.secondary))
+            response_message = string.format(
+                'Updated current muzzle to %s.', 
+                strColor(ucFirst(muzzle), colors.secondary)
+            )
         end
 
     elseif command_args[2] == 'get' or command_args[2] == 'g' then
         respond = true
-        response_message = 'Current muzzle is %s.'
+        response_message = string.format(
+            'Current muzzle is %s.', 
+            strColor(ucFirst(getMuzzle()), colors.secondary)
+        )
 
     elseif command_args[2] == 'default' or command_args[2] == 'd' then
         respond = true
         requestInject()
 
         setMuzzle(muzzles.silent.name)
-        response_message = 'Updated current muzzle to the default (%s).'
+        response_message = string.format(
+            'Updated current muzzle to the default (%s\30\1).', 
+            strColor('Silent', colors.secondary)
+        )
 
     elseif command_args[2] == 'reload' or command_args[2] == 'r' then
-        windower.send_command('lua r mountmuzzle')
+        AshitaCore:GetChatManager():QueueCommand('/addon reload mountmuzzle', 1)
     
     elseif command_args[2] == 'unload' or command_args[2] == 'u' then
         respond = true
         response_message = 'Thank you for using Mount Muzzle. Goodbye.'
-        windower.send_command('lua unload mountmuzzle')
+        AshitaCore:GetChatManager():QueueCommand('/addon unload mountmuzzle', 1)
 
     elseif command_args[2] == 'about' or command_args[2] == 'a' then
         display_help(help.about)
@@ -247,6 +261,7 @@ ashita.register_event('command', function(command, ntype)
 
     else
         display_help(help.commands)
+    
     end
 
     if respond then
