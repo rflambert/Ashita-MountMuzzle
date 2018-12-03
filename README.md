@@ -71,11 +71,10 @@ The following aliases are available to Mount Muzzle commands:
  ___
 ### Usage
 
-Manually load the addon by using one of the following commands:
+Manually load the addon by using the following command:
     
-    //lua load mountmuzzle  
-    //lua l mountmuzzle
-
+    /addon load mountmuzzle  
+    
 ___    
 ### Commands
 
@@ -83,30 +82,30 @@ ___
 
 Displays available Mount Muzzle commands. Below are the equivalent ways of calling the command:
 
-    //mountmuzzle help
-    //muzzle help
-    //mm help
-    //mountmuzzle h
-    //muzzle h
-    //mm h
+    /mountmuzzle help
+    /muzzle help
+    /mm help
+    /mountmuzzle h
+    /muzzle h
+    /mm h
 
 **list** 
 
 Displays the available muzzle types. Below are the equivalent ways of calling the command:
 
-    //mountmuzzle list
-    //muzzle list
-    //mm list
-    //mm l
+    /mountmuzzle list
+    /muzzle list
+    /mm list
+    /mm l
    
 **set _\<muzzle>_**
 
 Sets the current muzzle to the given muzzle type. This command takes a single argument represented by `<muzzle>`. Below are the equivalent ways of calling the command:
 
-    //mountmuzzle set <muzzle>
-    //muzzle set <muzzle>
-    //mm set <muzzle>
-    //mm s <muzzle>
+    /mountmuzzle set <muzzle>
+    /muzzle set <muzzle>
+    /mm set <muzzle>
+    /mm s <muzzle>
     
 Here are some usage examples for the **set _\<muzzle>_** command: `mm set silent` and `muzzle set zone` etc...
 
@@ -114,46 +113,46 @@ Here are some usage examples for the **set _\<muzzle>_** command: `mm set silent
 
 Displays the current muzzle that is set. Below are the equivalent ways of calling the command:
     
-    //mountmuzzle get
-    //muzzle get
-    //mm get
-    //mm g
+    /mountmuzzle get
+    /muzzle get
+    /mm get
+    /mm g
     
 **default**
 
 Sets the current muzzle to the default muzzle type: `Silent`. Below are the equivalent ways of calling the command:
 
-    //mountmuzzle default
-    //muzzle default
-    //mm default
-    //mm d
+    /mountmuzzle default
+    /muzzle default
+    /mm default
+    /mm d
     
 **unload**
 
 Unloads the Mount Muzzle addon. Below are the equivalent ways of calling the command:
     
-    //mountmuzzle unload
-    //muzzle unload
-    //mm unload
-    //mm u
+    /mountmuzzle unload
+    /muzzle unload
+    /mm unload
+    /mm u
     
 **reload**
 
 Reloads the Mount Muzzle addon. Below are the equivalent ways of calling the command:
     
-    //mountmuzzle reload
-    //muzzle reload
-    //mm reload
-    //mm r
+    /mountmuzzle reload
+    /muzzle reload
+    /mm reload
+    /mm r
 
 **about**
 
 Displays information about the Mount Muzzle addon. Below are the equivalent ways of calling the command:
     
-    //mountmuzzle about
-    //muzzle about
-    //mm about
-    //mm a
+    /mountmuzzle about
+    /muzzle about
+    /mm about
+    /mm a
     
 ___
 ### Support
