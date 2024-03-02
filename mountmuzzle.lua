@@ -26,22 +26,24 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 --]]
 
-_addon.name = 'Mount Muzzle'
-_addon.description = 'Change or remove the default mount music.'
-_addon.author = 'Sjshovan (Apogee) sjshovan@gmail.com'
-_addon.version = '0.9.0'
-_addon.commands = {'/mountmuzzle', '/muzzle', '/mm'}
-
-require('constants')
-require('helpers')
+addon.name = 'Mount Muzzle'
+addon.description = 'Change or remove the default mount music.'
+addon.author = 'Sjshovan (Apogee) sjshovan@gmail.com'
+addon.version = '0.9.0'
+addon.commands = {'/mountmuzzle', '/muzzle', '/mm'}
 
 require 'common'
+require('constants')
+require('helpers')
+local settings = require('settings')
 
-local default_settings = {    
-	muzzle = "silent"
-}
+local default_settings = T{    
+	muzzle = "silent",
+};
 
-local settings = default_settings;
+local mountmuzzle = T{
+	settings = settings.load(default_settings),
+};
 
 local defaults = {
     muzzle = muzzles.silent.name
@@ -78,10 +80,10 @@ local help = {
         buildHelpSeperator('=', 23),
         buildHelpTitle('About'),
         buildHelpSeperator('=', 23),
-        buildHelpTypeEntry('Name', _addon.name),
-        buildHelpTypeEntry('Description', _addon.description),
-        buildHelpTypeEntry('Author', _addon.author),
-        buildHelpTypeEntry('Version', _addon.version),
+        buildHelpTypeEntry('Name', addon.name),
+        buildHelpTypeEntry('Description', addon.description),
+        buildHelpTypeEntry('Author', addon.author),
+        buildHelpTypeEntry('Version', addon.version),
         buildHelpSeperator('=', 23),
     },
     aliases = {
@@ -101,11 +103,11 @@ function display_help(table_help)
 end
 
 function getMuzzle()
-    return settings.muzzle
+    return mountmuzzle.settings.muzzle
 end
 
 function getPlayerBuffs() 
-    return AshitaCore:GetDataManager():GetPlayer():GetBuffs()
+    return AshitaCore:GetMemoryManager():GetPlayer():GetBuffs()
 end
 
 function resolveCurrentMuzzle()
@@ -127,8 +129,8 @@ function resolveCurrentMuzzle()
 end
 
 function setMuzzle(muzzle)
-    settings.muzzle = muzzle
-    ashita.settings.save(_addon.path .. '/settings/settings.json', settings);
+    mountmuzzle.settings.muzzle = muzzle
+	settings.save()
 end
 
 function playerInReive()
@@ -136,7 +138,7 @@ function playerInReive()
 end
 
 function playerIsMounted()
-    local entity = AshitaCore:GetDataManager():GetEntity()
+    local entity = AshitaCore:GetMemoryManager():GetEntity()
 
     if entity then
         return tableContains(
@@ -161,7 +163,7 @@ function injectMusic(bgmType, songID)
     local bgm_packet = struct.pack("bbbbbbb", 
         0x5F, 0x04, 0x00, 0x00, 0x04, 0x00, songID, 0x00
     ):totable();
-    AddIncomingPacket(packets.inbound.music_change.id, bgm_packet)
+    AshitaCore:GetPacketManager():AddIncomingPacket(packets.inbound.music_change.id, bgm_packet)
 end
 
 function requestInject()
@@ -180,22 +182,19 @@ function tryInject()
     handleInjectionNeeds()
 end
 
-ashita.register_event('load', function()
-    settings = ashita.settings.load_merged(
-        _addon.path .. '/settings/settings.json', settings
-    )   
+ashita.events.register('load', 'load_cb', function()
     tryInject();
 end)
 
-ashita.register_event('unload', function() 
+ashita.events.register('unload', 'unload_cb', function() 
     injectMusic(music.types.mount, muzzles.zone.song)
 end)
 
-ashita.register_event('command', function(command, ntype)
+ashita.events.register('command', 'command_cb', function(e)
 
-    local command_args = command:lower():args()
+    local command_args = e.command:lower():args()
 
-    if not tableContains(_addon.commands, command_args[1]) then
+    if not tableContains(addon.commands, command_args[1]) then
         return false
     end 
 
@@ -275,16 +274,14 @@ ashita.register_event('command', function(command, ntype)
     return false
 end)
 
-ashita.register_event('incoming_packet', function(id, size, packet, modified_packet, blocked_packet)
-    if id == packets.inbound.music_change.id then
-        local music_type = struct.unpack('H', packet, packets.inbound.music_change.offsets.type + 1)
+ashita.events.register('packet_in', 'packet_in_cb', function(e)
+    if e.id == packets.inbound.music_change.id then
+        local music_type = struct.unpack('H', e.data_modified, packets.inbound.music_change.offsets.type + 1)
    
         if music_type == music.types.mount then
             injectMusic(music.types.mount, resolveCurrentMuzzle().song)
             return true               
         end
-
-        tryInject()
     end
 	
     return false

@@ -48,7 +48,7 @@ end
 function buildHelpTitle(context)
     local context = strColor(context, colors.danger)
     
-    return string.format("%s Help: %s", _addon.name, context)
+    return string.format("%s Help: %s", addon.name, context)
 end
 
 function buildHelpSeperator(character, count)
